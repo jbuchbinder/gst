@@ -49,6 +49,10 @@ func NewBufferAllocate(size uint) *Buffer {
 	return buffer
 }
 
+func (this *Buffer) g() *C.GstBuffer {
+	return (*C.GstBuffer)(this.GstBuffer)
+}
+
 func (this *Buffer) GetSize() uint {
 	return (uint)(C.gst_buffer_get_size((*C.GstBuffer)(this.GstBuffer)))
 }
@@ -92,4 +96,10 @@ func (this *Buffer) SetOffsetEnd(value uint64) {
 
 func (this *Buffer) Unref() {
 	C.gst_buffer_unref((*C.GstBuffer)(this.GstBuffer))
+}
+
+func (this *Buffer) Copy() *Buffer {
+	buffer := new(Buffer)
+	buffer.GstBuffer = (*GstBufferStruct)(C.gst_buffer_copy(this.g()))
+	return buffer
 }

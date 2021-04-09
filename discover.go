@@ -70,6 +70,24 @@ const (
 	DISCOVERER_MISSING_PLUGINS = DiscovererResult(C.GST_DISCOVERER_MISSING_PLUGINS)
 )
 
+func (s DiscovererResult) String() string {
+	switch s {
+	case DISCOVERER_OK:
+		return "DISCOVERER_OK"
+	case DISCOVERER_URI_INVALID:
+		return "DISCOVERER_URI_INVALID"
+	case DISCOVERER_ERROR:
+		return "DISCOVERER_ERROR"
+	case DISCOVERER_TIMEOUT:
+		return "DISCOVERER_TIMEOUT"
+	case DISCOVERER_BUSY:
+		return "DISCOVERER_BUSY"
+	case DISCOVERER_MISSING_PLUGINS:
+		return "DISCOVERER_MISSING_PLUGINS"
+	}
+	panic("Unknown state")
+}
+
 func (i *DiscovererInfo) GetResult() DiscovererResult {
 	return DiscovererResult(C.gst_discoverer_info_get_result(i.g()))
 }
