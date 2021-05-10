@@ -8,6 +8,7 @@ import "C"
 
 import (
 	"unsafe"
+
 	"github.com/ziutek/glib"
 )
 
@@ -79,3 +80,6 @@ func (o *GstObj) ImplementsInterfaceCast(typ glib.Type) glib.Pointer {
 		C.GType(typ)))
 }*/
 
+func (o *GstObj) GstUnref() {
+	C.gst_object_unref(C.gpointer(o.g()))
+}
