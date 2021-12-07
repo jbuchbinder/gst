@@ -109,5 +109,6 @@ func GetFilenameToUri(file string) (string, error) {
 	}
 
 	uri := C.GoString((*C.char)(str))
+	defer C.g_free(C.gpointer(str))
 	return uri, nil
 }

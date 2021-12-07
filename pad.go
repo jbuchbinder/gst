@@ -4,14 +4,66 @@ package gst
 #include <stdlib.h>
 #include <gst/gst.h>
 
+extern GstPadProbeReturn goPadProbeFunc (GstPad * pad, GstPadProbeInfo * info, gpointer user_data);
+extern void              goGDestroyNotifyFuncNoRun    (gpointer user_data);
+
+GstPadProbeReturn
+cgoPadProbeFunc (GstPad * pad, GstPadProbeInfo * info, gpointer user_data) {
+	return goPadProbeFunc(pad, info, user_data);
+}
+
+void
+cgoGDestroyNotifyFuncNoRun (gpointer user_data) {
+	goGDestroyNotifyFuncNoRun(user_data);
+}
+
+
+#cgo pkg-config: gstreamer-1.0
+#cgo LDFLAGS: -lm
+#cgo CFLAGS: -Wno-deprecated-declarations
 */
 import "C"
 
 import (
 	"unsafe"
 
+	gopointer "github.com/mattn/go-pointer"
 	"github.com/ziutek/glib"
 )
+
+type PadProbeInfo struct {
+	ptr *C.GstPadProbeInfo
+}
+
+func (p *PadProbeInfo) ID() uint32 { return uint32(p.ptr.id) }
+
+func (p *PadProbeInfo) Type() PadProbeType { return PadProbeType(p.ptr._type) }
+
+func (p *PadProbeInfo) Offset() uint64 { return uint64(p.ptr.offset) }
+
+func (p *PadProbeInfo) Size() uint64 { return uint64(p.ptr.size) }
+
+func (p *PadProbeInfo) GetBuffer() *Buffer {
+	buf := C.gst_pad_probe_info_get_buffer(p.ptr)
+	if buf == nil {
+		return nil
+	}
+	return nil
+}
+
+func (p *PadProbeInfo) GetEvent() *Event {
+	ev := C.gst_pad_probe_info_get_event(p.ptr)
+	if ev == nil {
+		return nil
+	}
+
+	return nil
+	// return &Event(&ev)
+}
+
+func (p *PadProbeInfo) GetData() unsafe.Pointer {
+	return unsafe.Pointer(p.ptr.data)
+}
 
 type PadLinkReturn C.GstPadLinkReturn
 
@@ -148,6 +200,37 @@ func (p *Pad) SetActive(active bool) bool {
 func (p *Pad) GetCurrentCaps() *Caps {
 	// unref the caps when you're done
 	return (*Caps)(C.gst_pad_get_current_caps((*C.GstPad)(p.GetPtr())))
+}
+
+type PadProbeCallback func(*Pad, *PadProbeInfo, unsafe.Pointer) PadProbeReturn
+
+type UserData struct {
+	cb  unsafe.Pointer // callback
+	ptr unsafe.Pointer
+}
+
+func (p *Pad) AddProbe(mask PadProbeType, f PadProbeCallback, ptr unsafe.Pointer) uint64 {
+	user := new(UserData)
+	user.cb = gopointer.Save(f)
+	user.ptr = ptr
+	ret := C.gst_pad_add_probe(
+		p.g(),
+		C.GstPadProbeType(mask),
+		C.GstPadProbeCallback(C.cgoPadProbeFunc),
+		(C.gpointer)(unsafe.Pointer(user)),
+		// C.GDestroyNotify(C.cgoGDestroyNotifyFuncNoRun),
+		nil,
+	)
+
+	return uint64(ret)
+}
+
+func (p *Pad) RemoveProbe(id uint64) {
+	C.gst_pad_remove_probe(p.g(), C.gulong(id))
+}
+
+func (p *Pad) SendEvent(event *Event) bool {
+	return C.gst_pad_send_event(p.g(), (*C.GstEvent)(event.GstEvent)) != 0
 }
 
 type GhostPad struct {

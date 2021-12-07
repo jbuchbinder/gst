@@ -3,6 +3,15 @@ package gst
 /*
 #include <stdlib.h>
 #include <gst/gst.h>
+
+static inline
+void set_caps(GstElement *element, char *caps) {
+    GstCaps* c = gst_caps_from_string(caps);
+
+    g_object_set(G_OBJECT(element), "caps", c, NULL);
+    gst_caps_unref(c);
+}
+
 */
 import "C"
 
@@ -11,6 +20,21 @@ import (
 
 	"github.com/ziutek/glib"
 )
+
+type Format C.GstFormat
+
+const (
+	FORMAT_UNDEFINED = Format(C.GST_FORMAT_UNDEFINED)
+	FORMAT_DEFAULT   = Format(C.GST_FORMAT_DEFAULT)
+	FORMAT_BYTES     = Format(C.GST_FORMAT_BYTES)
+	FORMAT_TIME      = Format(C.GST_FORMAT_TIME)
+	FORMAT_BUFFERS   = Format(C.GST_FORMAT_BUFFERS)
+	FORMAT_PERCENT   = Format(C.GST_FORMAT_PERCENT)
+)
+
+func (f *Format) g() *C.GstFormat {
+	return (*C.GstFormat)(f)
+}
 
 type State C.GstState
 
@@ -156,6 +180,12 @@ func (e *Element) GetBus() *Bus {
 
 func (e *Element) SendEvent(event *Event) bool {
 	return C.gst_element_send_event(e.g(), (*C.GstEvent)(event.GstEvent)) != 0
+}
+
+func (e *Element) SetCaps(caps string) {
+	str := C.CString(caps)
+	defer C.free(unsafe.Pointer(str))
+	C.set_caps(e.g(), str)
 }
 
 // TODO: Move ElementFactoryMake to element_factory.go
