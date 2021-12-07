@@ -24,18 +24,16 @@ type EventType int
 
 // Type castrings of EventTypes
 const (
-	EventUnknown                EventType = C.GST_EVENT_UNKNOWN           // (0) – unknown event
-	EventFlushStart             EventType = C.GST_EVENT_FLUSH_START       // (2564)
-	EventFlushStop              EventType = C.GST_EVENT_FLUSH_STOP        // (5127)
-	EventStreamStart            EventType = C.GST_EVENT_STREAM_START      // (10254)
-	EventCaps                   EventType = C.GST_EVENT_CAPS              // (12814)
-	EventSegment                EventType = C.GST_EVENT_SEGMENT           // (17934)
-	EventStreamCollection       EventType = C.GST_EVENT_STREAM_COLLECTION // (19230)
-	EventTag                    EventType = C.GST_EVENT_TAG               // (20510)
-	EventBuffersize             EventType = C.GST_EVENT_BUFFERSIZE        // (23054)
-	EventSinkMessage            EventType = C.GST_EVENT_SINK_MESSAGE      // (25630)
-	EventStreamGroupDone        EventType = C.GST_EVENT_STREAM_GROUP_DONE // (26894)
-	EventEos                    EventType = C.GST_EVENT_EOS               // (28174)
+	EventUnknown                EventType = C.GST_EVENT_UNKNOWN      // (0) – unknown event
+	EventFlushStart             EventType = C.GST_EVENT_FLUSH_START  // (2564)
+	EventFlushStop              EventType = C.GST_EVENT_FLUSH_STOP   // (5127)
+	EventStreamStart            EventType = C.GST_EVENT_STREAM_START // (10254)
+	EventCaps                   EventType = C.GST_EVENT_CAPS         // (12814)
+	EventSegment                EventType = C.GST_EVENT_SEGMENT      // (17934)
+	EventTag                    EventType = C.GST_EVENT_TAG          // (20510)
+	EventBuffersize             EventType = C.GST_EVENT_BUFFERSIZE   // (23054)
+	EventSinkMessage            EventType = C.GST_EVENT_SINK_MESSAGE // (25630)
+	EventEos                    EventType = C.GST_EVENT_EOS          // (28174)
 	EventToc                    EventType = C.GST_EVENT_TOC
 	EventProtection             EventType = C.GST_EVENT_PROTECTION
 	EventSegmentDone            EventType = C.GST_EVENT_SEGMENT_DONE
@@ -47,7 +45,6 @@ const (
 	EventStep                   EventType = C.GST_EVENT_STEP
 	EventReconfigure            EventType = C.GST_EVENT_RECONFIGURE
 	EvnetTocSelect              EventType = C.GST_EVENT_TOC_SELECT
-	EventSelectStreams          EventType = C.GST_EVENT_SELECT_STREAMS
 	EventCustomUpstream         EventType = C.GST_EVENT_CUSTOM_UPSTREAM
 	EventCustomDownstream       EventType = C.GST_EVENT_CUSTOM_DOWNSTREAM
 	EventCustomDownstreamOob    EventType = C.GST_EVENT_CUSTOM_DOWNSTREAM_OOB
