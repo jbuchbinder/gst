@@ -9,7 +9,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/ziutek/glib"
+	"github.com/falinux/glib"
 )
 
 type GstObj struct {

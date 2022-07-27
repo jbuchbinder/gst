@@ -46,7 +46,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/ziutek/glib"
+	"github.com/falinux/glib"
 )
 
 // returns (uri, gerror)

@@ -8,8 +8,9 @@ import "C"
 
 import (
 	"errors"
-	"github.com/ziutek/glib"
 	"unsafe"
+
+	"github.com/falinux/glib"
 )
 
 type Bin struct {

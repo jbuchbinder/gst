@@ -10,7 +10,7 @@ import (
 	"unsafe"
 
 	gopointer "github.com/mattn/go-pointer"
-	"github.com/ziutek/glib"
+	"github.com/falinux/glib"
 )
 
 //export goPadProbeFunc

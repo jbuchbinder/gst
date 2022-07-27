@@ -6,8 +6,14 @@ package gst
 */
 import "C"
 
-type Socket C.GSocket
+type Socket struct {
+	GstObj
+}
 
 func (s *Socket) g() *C.GSocket {
-	return (*C.GSocket)(s)
+	return (*C.GSocket)(s.GetPtr())
+}
+
+func (s *Socket) AsSocket() *Socket {
+	return s
 }
