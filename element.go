@@ -188,6 +188,34 @@ func (e *Element) SetCaps(caps string) {
 	C.set_caps(e.g(), str)
 }
 
+func (e *Element) ElementQuery(q *Query) bool {
+	return C.gst_element_query(e.g(), q.g()) != 0
+}
+
+func (e *Element) ElementQueryPosition(f Format) int64 {
+	var cur C.gint64 = -1
+	r := C.gst_element_query_position(e.g(), C.GstFormat(f), &cur)
+	if r == 0 {
+		return -1
+	}
+
+	return int64(cur)
+}
+
+func (e *Element) ElementSeekSimple(format Format, f SeekFlag, pos int64) bool {
+	return C.gst_element_seek_simple(e.g(), C.GstFormat(format), C.GstSeekFlags(f), C.gint64(pos)) != 0
+}
+
+func (e *Element) GetActivePad(name string) *Pad {
+
+	active_pad := e.GetPropertyFromType(name, glib.TYPE_OBJECT).(*glib.Object)
+
+	p := new(Pad)
+	p.SetPtr(active_pad.GetPtr())
+
+	return p
+}
+
 // TODO: Move ElementFactoryMake to element_factory.go
 func ElementFactoryMake(factory_name, name string) *Element {
 	fn := (*C.gchar)(C.CString(factory_name))
