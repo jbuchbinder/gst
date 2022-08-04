@@ -208,7 +208,7 @@ func (e *Element) ElementSeekSimple(format Format, f SeekFlag, pos int64) bool {
 
 func (e *Element) GetActivePad(name string) *Pad {
 
-	active_pad := e.GetPropertyFromType(name, glib.TYPE_OBJECT).(*glib.Object)
+	active_pad := e.GetPropertyOfType(name, glib.TYPE_OBJECT).(*glib.Object)
 
 	p := new(Pad)
 	p.SetPtr(active_pad.GetPtr())
