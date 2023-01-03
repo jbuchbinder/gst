@@ -34,12 +34,47 @@ import (
 type GstBufferStruct C.GstBuffer
 
 type Buffer struct {
-	GstBuffer *GstBufferStruct
+	GstBuffer  *GstBufferStruct
+	GstMapInfo *MapInfo
+}
+
+type MapFlags int
+
+// Type casting of the map flag types
+const (
+	MapRead     MapFlags = C.GST_MAP_READ      //  (1) – map for read access
+	MapWrite    MapFlags = C.GST_MAP_WRITE     // (2) - map for write access
+	MapFlagLast MapFlags = C.GST_MAP_FLAG_LAST // (65536) – first flag that can be used for custom purposes
+)
+
+// MapInfo is a go representation of a GstMapInfo.
+type MapInfo struct {
+	ptr *C.GstMapInfo
+}
+
+func wrapMapInfo(mapInfo *C.GstMapInfo) *MapInfo { return &MapInfo{ptr: mapInfo} }
+
+func (m *MapInfo) g() *C.GstMapInfo {
+	return (*C.GstMapInfo)(m.ptr)
+}
+
+func (m *MapInfo) Data() unsafe.Pointer {
+	return unsafe.Pointer(m.ptr.data)
+}
+
+// Size returrns the size of this map.
+func (m *MapInfo) Size() int64 {
+	return int64(m.ptr.size)
+}
+
+func (m *MapInfo) Bytes() []byte {
+	return C.GoBytes(m.Data(), (C.int)(m.Size()))
 }
 
 func NewBuffer() *Buffer {
 	buffer := new(Buffer)
 	buffer.GstBuffer = (*GstBufferStruct)(C.gst_buffer_new())
+	buffer.GstMapInfo = nil
 	return buffer
 }
 
@@ -104,39 +139,6 @@ func (b *Buffer) Copy() *Buffer {
 	return buffer
 }
 
-type MapFlags int
-
-// Type casting of the map flag types
-const (
-	MapRead     MapFlags = C.GST_MAP_READ      //  (1) – map for read access
-	MapWrite    MapFlags = C.GST_MAP_WRITE     // (2) - map for write access
-	MapFlagLast MapFlags = C.GST_MAP_FLAG_LAST // (65536) – first flag that can be used for custom purposes
-)
-
-// MapInfo is a go representation of a GstMapInfo.
-type MapInfo struct {
-	ptr *C.GstMapInfo
-}
-
-func wrapMapInfo(mapInfo *C.GstMapInfo) *MapInfo { return &MapInfo{ptr: mapInfo} }
-
-func (m *MapInfo) Data() unsafe.Pointer {
-	return unsafe.Pointer(m.ptr.data)
-}
-
-// Size returrns the size of this map.
-func (m *MapInfo) Size() int64 {
-	return int64(m.ptr.size)
-}
-
-func (m *MapInfo) Bytes() []byte {
-	return C.GoBytes(m.Data(), (C.int)(m.Size()))
-}
-
-// func (m *MapInfo)Unmap() {
-// 	C.gst_buffer_unmap()
-// }
-
 func (b *Buffer) BufferMap(flags MapFlags) *MapInfo {
 	var mapinfo C.GstMapInfo
 
@@ -145,8 +147,8 @@ func (b *Buffer) BufferMap(flags MapFlags) *MapInfo {
 		(*C.GstMapInfo)(&mapinfo),
 		C.GstMapFlags(flags),
 	)
-
-	return wrapMapInfo((*C.GstMapInfo)(&mapinfo))
+	b.GstMapInfo = wrapMapInfo((*C.GstMapInfo)(&mapinfo))
+	return b.GstMapInfo
 }
 
 func (b *Buffer) Bytes() []byte {
@@ -154,6 +156,14 @@ func (b *Buffer) Bytes() []byte {
 	if mapinfo == nil {
 		return nil
 	}
-	// defer b.Unmap()
+
 	return mapinfo.Bytes()
+}
+
+func (b *Buffer) Unmap() {
+	if b.GstMapInfo == nil {
+		return
+	}
+
+	C.gst_buffer_unmap((*C.GstBuffer)(b.g()), (*C.GstMapInfo)(b.GstMapInfo.g()))
 }

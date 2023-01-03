@@ -21,7 +21,7 @@ func (s *Sample) g() *C.GstSample {
 }
 
 func (s *Sample) GetBuffer() *Buffer {
-	return &Buffer{(*GstBufferStruct)(C.gst_sample_get_buffer(s.g()))}
+	return &Buffer{(*GstBufferStruct)(C.gst_sample_get_buffer(s.g())), nil}
 }
 
 func (s *Sample) Unref() {
