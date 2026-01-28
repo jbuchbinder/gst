@@ -106,7 +106,6 @@ func (t MessageType) String() string {
 	default:
 		return "Unknown value of gst.MessageType"
 	}
-	panic("Unknown value of gst.MessageType")
 }
 
 type Message C.GstMessage

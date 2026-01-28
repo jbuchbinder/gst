@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/ziutek/glib"
-	"github.com/ziutek/gst"
+	"github.com/jbuchbinder/gst"
 )
 
 func checkElem(e *gst.Element, name string) {
